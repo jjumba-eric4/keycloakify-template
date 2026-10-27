@@ -39,90 +39,94 @@ export default function Applications(props: PageProps<Extract<KcContext, { pageI
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {applications.map(application => (
-                                    <TableRow key={application.client.clientId}>
-                                        <TableCell>
-                                            {application.effectiveUrl ? (
-                                                <a href={application.effectiveUrl}>
-                                                    {(application.client.name && advancedMsg(application.client.name)) ||
-                                                        application.client.clientId}
-                                                </a>
-                                            ) : (
-                                                (application.client.name && advancedMsg(application.client.name)) || application.client.clientId
-                                            )}
-                                        </TableCell>
+                                {applications.map((application, index) => {
+                                    // Keycloak can hand back an application/consent entry whose client was
+                                    // since deleted from the realm — kcContext's type claims `client` is
+                                    // always present, but real servers can send it as null/undefined here.
+                                    const client = application.client as (typeof application)["client"] | undefined;
+                                    const displayName = client?.name ? advancedMsg(client.name) : (client?.clientId ?? msg("unknownApplication"));
 
-                                        <TableCell>
-                                            {!isArrayWithEmptyObject(application.realmRolesAvailable) &&
-                                                application.realmRolesAvailable.map((role, index) => (
-                                                    <span key={role.name}>
-                                                        {role.description ? advancedMsg(role.description) : advancedMsg(role.name)}
-                                                        {index < application.realmRolesAvailable.length - 1 && ", "}
+                                    return (
+                                        <TableRow key={client?.clientId ?? index}>
+                                            <TableCell>
+                                                {application.effectiveUrl ? <a href={application.effectiveUrl}>{displayName}</a> : displayName}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {!isArrayWithEmptyObject(application.realmRolesAvailable) &&
+                                                    application.realmRolesAvailable.map((role, index) => (
+                                                        <span key={role.name}>
+                                                            {role.description ? advancedMsg(role.description) : advancedMsg(role.name)}
+                                                            {index < application.realmRolesAvailable.length - 1 && ", "}
+                                                        </span>
+                                                    ))}
+                                                {application.resourceRolesAvailable &&
+                                                    Object.keys(application.resourceRolesAvailable).map(resource => (
+                                                        <span key={resource}>
+                                                            {!isArrayWithEmptyObject(application.realmRolesAvailable) && ", "}
+                                                            {application.resourceRolesAvailable[resource].map(clientRole => (
+                                                                <span key={clientRole.roleName}>
+                                                                    {clientRole.roleDescription
+                                                                        ? advancedMsg(clientRole.roleDescription)
+                                                                        : advancedMsg(clientRole.roleName)}{" "}
+                                                                    {msg("inResource")}{" "}
+                                                                    <strong>
+                                                                        {clientRole.clientName
+                                                                            ? advancedMsg(clientRole.clientName)
+                                                                            : clientRole.clientId}
+                                                                    </strong>
+                                                                    {clientRole !==
+                                                                        application.resourceRolesAvailable[resource][
+                                                                            application.resourceRolesAvailable[resource].length - 1
+                                                                        ] && ", "}
+                                                                </span>
+                                                            ))}
+                                                        </span>
+                                                    ))}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {client?.consentRequired ? (
+                                                    application.clientScopesGranted.map(claim => (
+                                                        <span key={claim}>
+                                                            {advancedMsg(claim)}
+                                                            {claim !== application.clientScopesGranted[application.clientScopesGranted.length - 1] &&
+                                                                ", "}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <strong>{msg("fullAccess")}</strong>
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {application.additionalGrants.map(grant => (
+                                                    <span key={grant}>
+                                                        {advancedMsg(grant)}
+                                                        {grant !== application.additionalGrants[application.additionalGrants.length - 1] && ", "}
                                                     </span>
                                                 ))}
-                                            {application.resourceRolesAvailable &&
-                                                Object.keys(application.resourceRolesAvailable).map(resource => (
-                                                    <span key={resource}>
-                                                        {!isArrayWithEmptyObject(application.realmRolesAvailable) && ", "}
-                                                        {application.resourceRolesAvailable[resource].map(clientRole => (
-                                                            <span key={clientRole.roleName}>
-                                                                {clientRole.roleDescription
-                                                                    ? advancedMsg(clientRole.roleDescription)
-                                                                    : advancedMsg(clientRole.roleName)}{" "}
-                                                                {msg("inResource")}{" "}
-                                                                <strong>
-                                                                    {clientRole.clientName ? advancedMsg(clientRole.clientName) : clientRole.clientId}
-                                                                </strong>
-                                                                {clientRole !==
-                                                                    application.resourceRolesAvailable[resource][
-                                                                        application.resourceRolesAvailable[resource].length - 1
-                                                                    ] && ", "}
-                                                            </span>
-                                                        ))}
-                                                    </span>
-                                                ))}
-                                        </TableCell>
+                                            </TableCell>
 
-                                        <TableCell>
-                                            {application.client.consentRequired ? (
-                                                application.clientScopesGranted.map(claim => (
-                                                    <span key={claim}>
-                                                        {advancedMsg(claim)}
-                                                        {claim !== application.clientScopesGranted[application.clientScopesGranted.length - 1] &&
-                                                            ", "}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <strong>{msg("fullAccess")}</strong>
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {application.additionalGrants.map(grant => (
-                                                <span key={grant}>
-                                                    {advancedMsg(grant)}
-                                                    {grant !== application.additionalGrants[application.additionalGrants.length - 1] && ", "}
-                                                </span>
-                                            ))}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {(application.client.consentRequired && application.clientScopesGranted.length > 0) ||
-                                            application.additionalGrants.length > 0 ? (
-                                                <Button
-                                                    type="submit"
-                                                    size="sm"
-                                                    variant="outline"
-                                                    id={`revoke-${application.client.clientId}`}
-                                                    name="clientId"
-                                                    value={application.client.id}
-                                                >
-                                                    {msg("revoke")}
-                                                </Button>
-                                            ) : null}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                            <TableCell>
+                                                {client !== undefined &&
+                                                ((client.consentRequired && application.clientScopesGranted.length > 0) ||
+                                                    application.additionalGrants.length > 0) ? (
+                                                    <Button
+                                                        type="submit"
+                                                        size="sm"
+                                                        variant="outline"
+                                                        id={`revoke-${client.clientId}`}
+                                                        name="clientId"
+                                                        value={client.id}
+                                                    >
+                                                        {msg("revoke")}
+                                                    </Button>
+                                                ) : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </form>
