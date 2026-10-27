@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) + 8px);
+    --radius-3xl: calc(var(--radius) + 12px);
+    --radius-4xl: calc(var(--radius) + 16px);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Quiet text for metadata and hints. */
+    --color-faint: var(--faint);
+    /* Status colors: -muted is the pill background, the plain color is its text/dot. */
+    --color-success: var(--success);
+    --color-success-muted: var(--success-muted);
+    --color-warning: var(--warning);
+    --color-warning-muted: var(--warning-muted);
+
+    /* Brand panel — a constant dark surface, independent of light/dark mode. */
+    --color-panel: var(--panel);
+    --color-panel-foreground: var(--panel-foreground);
+    --color-panel-muted-foreground: var(--panel-muted-foreground);
+    --color-panel-accent: var(--panel-accent);
+}
+
+/* Light theme: "Violet". Mirrors HIVEOS.ControlPlane.Web's src/index.css so the
+   Keycloak theme reads as the same product. */
+:root {
+    color-scheme: light;
+    --radius: 0.625rem;
+    --background: #f6f6fb;
+    --foreground: #1e1b2e;
+    --card: #ffffff;
+    --card-foreground: #1e1b2e;
+    --popover: #ffffff;
+    --popover-foreground: #1e1b2e;
+    --primary: #6d5ef5;
+    --primary-foreground: #ffffff;
+    --secondary: #f1f0f9;
+    --secondary-foreground: #1e1b2e;
+    --muted: #f1f0f9;
+    --muted-foreground: #6a6880;
+    --faint: #74728a;
+    --accent: #eeebff;
+    --accent-foreground: #4437c4;
+    --destructive: #d92d4a;
+    --border: #e6e5f0;
+    --input: #dad8e9;
+    --ring: #6d5ef5;
+    --success: #0b6b52;
+    --success-muted: #ddf5ec;
+    --warning: #7a4d00;
+    --warning-muted: #fff1d1;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #1e1b2e;
+    --sidebar-primary: #6d5ef5;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #eeebff;
+    --sidebar-accent-foreground: #4437c4;
+    --sidebar-border: #e6e5f0;
+    --sidebar-ring: #6d5ef5;
+
+    /* Pinned to the Midnight palette (see .dark below) — the panel never flips. */
+    --panel: #0c0d16;
+    --panel-foreground: #ecedf6;
+    --panel-muted-foreground: #a3a6be;
+    --panel-accent: #8b92ff;
+}
+
+/* Dark theme: "Midnight". */
+.dark {
+    color-scheme: dark;
+    --background: #0c0d16;
+    --foreground: #ecedf6;
+    --card: #14151f;
+    --card-foreground: #ecedf6;
+    --popover: #1c1e2c;
+    --popover-foreground: #ecedf6;
+    --primary: #8b92ff;
+    --primary-foreground: #0c0d16;
+    --secondary: #1c1e2c;
+    --secondary-foreground: #ecedf6;
+    --muted: #1c1e2c;
+    --muted-foreground: #a3a6be;
+    --faint: #8a8da8;
+    --accent: #242650;
+    --accent-foreground: #c4c8ff;
+    --destructive: #ff6b7a;
+    --border: #272a3b;
+    --input: #33374d;
+    --ring: #8b92ff;
+    --success: #5be3ae;
+    --success-muted: #12332b;
+    --warning: #ffc66b;
+    --warning-muted: #3a2d12;
+    --sidebar: #14151f;
+    --sidebar-foreground: #ecedf6;
+    --sidebar-primary: #8b92ff;
+    --sidebar-primary-foreground: #0c0d16;
+    --sidebar-accent: #242650;
+    --sidebar-accent-foreground: #c4c8ff;
+    --sidebar-border: #272a3b;
+    --sidebar-ring: #8b92ff;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+    }
+}

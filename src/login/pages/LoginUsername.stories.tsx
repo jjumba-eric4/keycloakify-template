@@ -1,0 +1,31 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { createKcPageStory } from "../KcPageStory";
+
+const { KcPageStory } = createKcPageStory({ pageId: "login-username.ftl" });
+
+const meta = {
+    title: "login/login-username.ftl",
+    component: KcPageStory
+} satisfies Meta<typeof KcPageStory>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const WithError: Story = {
+    render: () => (
+        <KcPageStory
+            kcContext={{
+                messagesPerField: {
+                    existsError: (...fieldNames: string[]) => fieldNames.includes("username"),
+                    get: () => "User not found.",
+                    getFirstError: () => "User not found.",
+                    exists: () => true,
+                    printIfExists: <T,>(_fieldName: string, text: T) => text
+                }
+            }}
+        />
+    )
+};
